@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template, redirect, session
 from flask_cors import CORS
-import stripe
+import stripe, json
 
 app = Flask(__name__)
 CORS(app)
@@ -8,32 +8,47 @@ stripe.api_key = "sk_test_51MreNMAJME9DYeVIWdJQlEC35AwfQT9DVuYXzRdm4932kqOtDODFg
 
 @app.route('/')
 def index():
-   return render_template('index.html')
+  return render_template('index.html')
 
 @app.route('/payment', methods=['POST'])
 def payment():
-  data = request.get_json()
-  session = stripe.checkout.Session.create(
-    line_items=[{
-      'price_data': {
-        'currency': 'sgd',
-        'product_data': {
-          'name': 'Healthcare Services & Medication',
+  try:
+    data = request.get_json() 
+    print("Data from JS:", data)
+
+    # Set correct price amount for Stripe
+    price = int(float(data['TotalPrice'])*100)
+    print("Price:", price)
+
+    print("--Stripe Create Checkout Session--")
+    session = stripe.checkout.Session.create(
+      line_items=[{
+        'price_data': {
+          'currency': 'sgd',
+          'product_data': {
+            'name': 'Healthcare Services & Medication',
+          },
+          'unit_amount': price,
         },
-        'unit_amount': data['TotalPrice'],
-      },
-      'quantity': 1,
-    }],
-    mode='payment',
-    success_url='http://127.0.0.1:5000/success',
-    cancel_url='http://127.0.0.1:5000/',
-  )
-
-  return redirect(session.url, code=303)
-
+        'quantity': 1,
+      }],
+      mode='payment',
+      success_url='http://127.0.0.1:5000/success',
+      cancel_url='http://127.0.0.1:5000/',
+    )
+    
+    print("Generated Payment Link:", session.url)
+    
+    return jsonify({"link": session.url})
+  
+  except Exception as e:
+    print(f"An Error Occurred: here {e}")
+    return jsonify({"status": "error"}),500
+  
 @app.route('/success')
 def success():
-    return render_template('success.html')
+  print("--Payment Completed!--")
+  return render_template('success.html')
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)

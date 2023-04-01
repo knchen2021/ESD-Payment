@@ -3,13 +3,38 @@
 
 <head>
     <title> Healthcare </title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </head>
 
 <body>
-    <form action="/payment" method="post">
-        <button name="payBtn" type="submit">Pay</button>
-        <!--<div id="button-container"></div>-->
-    </form>
+    
+    <button name="payBtn" onclick="makePayment()">Pay</button>   
+
+    <script>
+    function makePayment(){
+
+        let api_endpoint_url ="http://127.0.0.1:5000/payment"
+
+        var bodyFormData = new FormData()
+        bodyFormData.append('PatientID',1)
+        bodyFormData.append('TotalPrice',12.34)
+
+        axios({
+            method: "POST",
+            url: api_endpoint_url,
+            data: bodyFormData,
+            headers: { "Content-Type": "application/json"}
+        })
+        .then(response =>{
+            let link = response.data.link
+            window.location.href=link
+
+        }).catch(error =>{
+            console.log(error.message)
+        })
+
+    }
+    </script>
 </body>
 
 </html>
