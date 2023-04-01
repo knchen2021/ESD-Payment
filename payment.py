@@ -1,9 +1,7 @@
 from flask import Flask, request, jsonify, render_template, redirect, session
-from flask_cors import CORS
-import stripe, json
+import stripe
 
 app = Flask(__name__)
-CORS(app)
 stripe.api_key = "sk_test_51MreNMAJME9DYeVIWdJQlEC35AwfQT9DVuYXzRdm4932kqOtDODFgqTazUHW4zf2vi7E9aebX1POK5YM4qeYGSoz0018UpgOD8"
 
 @app.route('/')
