@@ -1,10 +1,11 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
-import stripe
+import stripe, os
 
 app = Flask(__name__)
 CORS(app)
-stripe.api_key = "sk_test_51MreNMAJME9DYeVIWdJQlEC35AwfQT9DVuYXzRdm4932kqOtDODFgqTazUHW4zf2vi7E9aebX1POK5YM4qeYGSoz0018UpgOD8"
+api_key = os.environ.get('stripeKey')
+stripe.api_key = api_key
 
 @app.route('/')
 def index():
@@ -39,7 +40,7 @@ def payment():
     
     print("Generated Payment Link:", session.url)
     
-    return jsonify({"link": session.url}),302
+    return jsonify({"link": session.url}),200
   
   except Exception as e:
     print(f"An Error Occurred: here {e}")
