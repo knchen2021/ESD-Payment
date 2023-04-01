@@ -1,7 +1,9 @@
 from flask import Flask, request, jsonify, render_template
+from flask_cors import CORS
 import stripe
 
 app = Flask(__name__)
+CORS(app)
 stripe.api_key = "sk_test_51MreNMAJME9DYeVIWdJQlEC35AwfQT9DVuYXzRdm4932kqOtDODFgqTazUHW4zf2vi7E9aebX1POK5YM4qeYGSoz0018UpgOD8"
 
 @app.route('/')
@@ -49,4 +51,4 @@ def success():
   return render_template('success.html')
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
