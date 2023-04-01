@@ -39,7 +39,7 @@ def payment():
     
     print("Generated Payment Link:", session.url)
     
-    return jsonify({"link": session.url})
+    return jsonify({"link": session.url}),302
   
   except Exception as e:
     print(f"An Error Occurred: here {e}")
