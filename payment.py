@@ -7,10 +7,6 @@ CORS(app)
 api_key = os.environ.get('stripeKey')
 stripe.api_key = api_key
 
-@app.route('/')
-def index():
-  return render_template('index.html')
-
 @app.route('/payment', methods=['POST'])
 def payment():
   try:
@@ -34,22 +30,23 @@ def payment():
         'quantity': 1,
       }],
       mode='payment',
-      success_url='http://127.0.0.1:5000/success',
-      cancel_url='http://127.0.0.1:5000/',
+      success_url='http://127.0.0.1:5100/success?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url='http://127.0.0.1:5100/',
     )
     
     print("Generated Payment Link:", session.url)
     
-    return jsonify({"link": session.url}),200
+    return jsonify(
+      {
+          "code": 200,
+          "link": session.url,
+          "message": "Payment Link Generated."
+      }
+    ), 200
   
   except Exception as e:
-    print(f"An Error Occurred: here {e}")
+    print(f"An Error Occurred: {e}")
     return jsonify({"status": "error"}),500
-  
-@app.route('/success')
-def success():
-  print("--Payment Completed!--")
-  return render_template('success.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
