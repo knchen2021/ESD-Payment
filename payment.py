@@ -4,8 +4,7 @@ import stripe, os
 
 app = Flask(__name__)
 CORS(app)
-api_key = os.environ.get('stripeKey')
-stripe.api_key = api_key
+stripe.api_key = os.environ.get('stripeKey')
 
 @app.route('/payment', methods=['POST'])
 def payment():
