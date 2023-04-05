@@ -19,7 +19,7 @@ def payment():
     # Create list of all medicines (if any) and services
     medicineService = []
     if "medicines" in data:
-      for medicine in json.loads(data["medicines"]):
+      for medicine in data["medicines"]:
           medicine_name = medicine['medicineName']
           medicine_price = int(medicine["price"] * 100)
           medicine_quantity = medicine["quantity"]
@@ -34,7 +34,7 @@ def payment():
               'quantity': medicine_quantity,
           })
 
-    for service in json.loads(data["services"]):
+    for service in data["services"]:
         service_name = service["serviceName"]
         service_price = int(service["price"] * 100)
         medicineService.append({
