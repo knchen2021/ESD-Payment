@@ -5,6 +5,7 @@ import stripe, os, json
 app = Flask(__name__)
 CORS(app)
 stripe.api_key = os.environ.get('stripeKey')
+URL = os.environ.get('url') 
 
 @app.route('/payment', methods=['POST'])
 def payment():
@@ -57,8 +58,8 @@ def payment():
       },
       line_items=medicineService,
       mode='payment',
-      success_url='http://127.0.0.1:5100/success?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url='http://127.0.0.1:5100/',
+      success_url= URL + '/success?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url = URL
     )
 
     print("Generated Payment Link:", session.url)
