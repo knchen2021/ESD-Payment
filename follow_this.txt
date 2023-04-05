@@ -1,2 +1,2 @@
-Run this:
-docker run -p 5000:5000 -e stripeKey=sk_test_51MreNMAJME9DYeVIWdJQlEC35AwfQT9DVuYXzRdm4932kqOtDODFgqTazUHW4zf2vi7E9aebX1POK5YM4qeYGSoz0018UpgOD8 1ckn/payment:1.0
+Env:
+stripeKey=sk_test_51MreNMAJME9DYeVIWdJQlEC35AwfQT9DVuYXzRdm4932kqOtDODFgqTazUHW4zf2vi7E9aebX1POK5YM4qeYGSoz0018UpgOD8
