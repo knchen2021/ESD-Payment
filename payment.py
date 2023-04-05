@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import stripe, os
+import stripe, os, json 
 
 app = Flask(__name__)
 CORS(app)
@@ -12,27 +12,55 @@ def payment():
     data = request.get_json() 
     print("Data from JS:", data)
 
-    # Set correct price amount for Stripe
-    price = int(float(data['TotalPrice'])*100)
-    print("Price:", price)
+    # Get appointment id
+    appointment_id = data['appointment_id']
+    print("Appointment ID:", appointment_id)
+
+    # Create list of all medicines (if any) and services
+    medicineService = []
+    if "medicines" in data:
+      for medicine in json.loads(data["medicines"]):
+          medicine_name = medicine['medicineName']
+          medicine_price = int(medicine["price"] * 100)
+          medicine_quantity = medicine["quantity"]
+          medicineService.append({
+              'price_data': {
+                'currency': 'sgd',
+                'product_data': {
+                  'name': medicine_name,
+                },
+                'unit_amount': medicine_price,
+              },
+              'quantity': medicine_quantity,
+          })
+
+    for service in json.loads(data["services"]):
+        service_name = service["serviceName"]
+        service_price = int(service["price"] * 100)
+        medicineService.append({
+            'price_data': {
+              'currency': 'sgd',
+              'product_data': {
+                'name': service_name,
+              },
+              'unit_amount': service_price,
+            },
+            'quantity': 1,
+        })
+
+    print("Verify list of medicines & services:", medicineService)
 
     print("--Stripe Create Checkout Session--")
     session = stripe.checkout.Session.create(
-      line_items=[{
-        'price_data': {
-          'currency': 'sgd',
-          'product_data': {
-            'name': 'Healthcare Services & Medication',
-          },
-          'unit_amount': price,
-        },
-        'quantity': 1,
-      }],
+      metadata={
+       "appointment_id": appointment_id
+      },
+      line_items=medicineService,
       mode='payment',
       success_url='http://127.0.0.1:5100/success?session_id={CHECKOUT_SESSION_ID}',
       cancel_url='http://127.0.0.1:5100/',
     )
-    
+
     print("Generated Payment Link:", session.url)
     
     return jsonify(
