@@ -5,7 +5,8 @@ import stripe, os, json
 app = Flask(__name__)
 CORS(app)
 stripe.api_key = os.environ.get('stripeKey')
-URL = os.environ.get('url') 
+successURL = os.environ.get('successUrl')
+cancelURL = os.environ.get('cancelUrl')
 
 @app.route('/payment', methods=['POST'])
 def payment():
@@ -20,9 +21,9 @@ def payment():
     # Create list of all medicines (if any) and services
     medicineService = []
     if "medicines" in data:
-      for medicine in data["medicines"]:
+      for medicine in json.loads(data["medicines"]):
           medicine_name = medicine['medicineName']
-          medicine_price = int(medicine["price"] * 100)
+          medicine_price = int(float(medicine["price"]["$numberDecimal"]) * 100)
           medicine_quantity = medicine["quantity"]
           medicineService.append({
               'price_data': {
@@ -35,9 +36,9 @@ def payment():
               'quantity': medicine_quantity,
           })
 
-    for service in data["services"]:
+    for service in json.loads(data["services"]):
         service_name = service["serviceName"]
-        service_price = int(service["price"] * 100)
+        service_price = int(float(service["price"]["$numberDecimal"]) * 100)
         medicineService.append({
             'price_data': {
               'currency': 'sgd',
@@ -58,8 +59,8 @@ def payment():
       },
       line_items=medicineService,
       mode='payment',
-      success_url= URL + '/success?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url = URL
+      success_url= successURL + '?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url = cancelURL
     )
 
     print("Generated Payment Link:", session.url)
