@@ -21,7 +21,10 @@ def payment():
     # Create list of all medicines (if any) and services
     medicineService = []
     if "medicines" in data:
-      for medicine in json.loads(data["medicines"]):
+      medicineData = data["medicines"]
+      if isinstance(data["medicines"], str): # Check if pass as JSON or string
+         medicineData = json.loads(data["medicines"])
+      for medicine in medicineData:
           medicine_name = medicine['medicineName']
           medicine_price = int(float(medicine["price"]["$numberDecimal"]) * 100)
           medicine_quantity = medicine["quantity"]
@@ -36,7 +39,10 @@ def payment():
               'quantity': medicine_quantity,
           })
 
-    for service in json.loads(data["services"]):
+    serviceData = data["services"]
+    if isinstance(data["services"], str): # Check if pass as JSON or string
+        serviceData = json.loads(data["services"])
+    for service in serviceData:
         service_name = service["serviceName"]
         service_price = int(float(service["price"]["$numberDecimal"]) * 100)
         medicineService.append({
@@ -75,7 +81,7 @@ def payment():
   
   except Exception as e:
     print(f"An Error Occurred: {e}")
-    return jsonify({"status": "error"}),500
+    return jsonify({"code": 500, "status": "Error generating payment link"}),500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5010, debug=True)
